@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ProvIDe - Bank-Verified Digital Identity Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
@@ -29,6 +30,24 @@
             section {
                 scroll-margin-top: 60px;
             }
+        }
+        /* Mermaid dark theme */
+        .mermaid {
+            background: rgba(15, 23, 42, 0.5) !important;
+        }
+        /* Mockup responsive styles */
+        .mockup-container {
+            overflow-x: auto;
+        }
+        @media (max-width: 640px) {
+            .mockup-container {
+                padding: 1rem;
+            }
+        }
+        /* Animation for loading dots */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
     </style>
 </head>
@@ -255,6 +274,70 @@
                     <div class="text-slate-300 leading-relaxed">
                         <p>
                             The system architecture consists of three main components: the client-side application, the server-side platform, and the bank authentication layer. The architecture follows a microservices approach with clear separation of concerns.
+                        </p>
+                    </div>
+
+                    <!-- Architecture Diagram -->
+                    <div class="bg-slate-800/50 rounded-lg p-8 border border-slate-700">
+                        <h3 class="text-2xl font-semibold text-white mb-6">System Architecture Diagram</h3>
+                        <div class="mermaid bg-white/5 rounded-lg p-4 overflow-x-auto mockup-container" style="min-height: 400px;">
+                            graph TB
+                                subgraph Client["Client Side"]
+                                    UI[User Interface<br/>Angular/React]
+                                    AuthBtn[Authentication Button]
+                                    Redirect[OAuth Redirect Handler]
+                                end
+                                
+                                subgraph ProvIDe["ProvIDe Platform"]
+                                    API[API Gateway]
+                                    AuthMod[Authentication Module]
+                                    IdentitySvc[Identity Assertion Service]
+                                    TokenMgr[Token Management]
+                                    Audit[Audit & Compliance]
+                                    DB[(Database<br/>Identity & Tokens)]
+                                end
+                                
+                                subgraph Banking["Banking Infrastructure"]
+                                    OpenBank[Open Banking<br/>Intermediary]
+                                    BankAuth[Bank Authentication<br/>OAuth 2.0]
+                                    BankDB[(Bank KYC Database)]
+                                end
+                                
+                                subgraph Services["Digital Services"]
+                                    LoanSvc[Loan Services]
+                                    Ecommerce[E-commerce Platforms]
+                                    Crypto[Crypto Services]
+                                end
+                                
+                                UI --> AuthBtn
+                                AuthBtn --> Redirect
+                                Redirect -->|OAuth Request| API
+                                API --> AuthMod
+                                AuthMod -->|Auth Request| OpenBank
+                                OpenBank --> BankAuth
+                                BankAuth -->|Verify Identity| BankDB
+                                BankAuth -->|Identity Confirmation| OpenBank
+                                OpenBank -->|Identity Assertion| IdentitySvc
+                                IdentitySvc --> TokenMgr
+                                TokenMgr --> DB
+                                IdentitySvc --> Audit
+                                Audit --> DB
+                                IdentitySvc -->|Verified Identity| API
+                                API -->|Identity Assertion| Services
+                                
+                                Services --> LoanSvc
+                                Services --> Ecommerce
+                                Services --> Crypto
+                                
+                                style Client fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#fff
+                                style ProvIDe fill:#1e293b,stroke:#10b981,stroke-width:2px,color:#fff
+                                style Banking fill:#1e293b,stroke:#f59e0b,stroke-width:2px,color:#fff
+                                style Services fill:#1e293b,stroke:#8b5cf6,stroke-width:2px,color:#fff
+                                style DB fill:#0f172a,stroke:#10b981,stroke-width:2px,color:#fff
+                                style BankDB fill:#0f172a,stroke:#f59e0b,stroke-width:2px,color:#fff
+                        </div>
+                        <p class="text-slate-400 text-sm mt-4 italic">
+                            The diagram illustrates the flow of identity verification from user interaction through bank authentication to digital service integration.
                         </p>
                     </div>
 
@@ -493,21 +576,136 @@
                     </div>
 
                     <div>
-                        <h3 class="text-2xl font-semibold text-white mb-4">6.2. Mockup</h3>
-                        <div class="bg-slate-800/50 rounded-lg p-6 border border-slate-700">
-                            <p class="text-slate-300 mb-4">
-                                The client-side interface will include the following key screens and components:
-                            </p>
-                            <ul class="space-y-3 text-slate-300 list-disc list-inside">
-                                <li><strong class="text-white">Authentication Button:</strong> Unified "Verify Identity via Bank" button component with ProvIDe branding</li>
-                                <li><strong class="text-white">Redirect Page:</strong> Secure loading state during bank authentication redirect</li>
-                                <li><strong class="text-white">Success Screen:</strong> Confirmation of successful identity verification</li>
-                                <li><strong class="text-white">Error Handling:</strong> User-friendly error messages for authentication failures</li>
-                                <li><strong class="text-white">Bank Selection:</strong> Interface for users to select their bank (if multiple supported)</li>
-                            </ul>
-                            <p class="text-slate-400 text-sm mt-4 italic">
-                                Note: Detailed mockups and wireframes will be created during the design phase using tools like Figma or Adobe XD.
-                            </p>
+                        <h3 class="text-2xl font-semibold text-white mb-6">6.2. Mockup</h3>
+                        <p class="text-slate-300 mb-6">
+                            Visual mockups of the key client-side screens and components:
+                        </p>
+                        
+                        <div class="space-y-8">
+                            <!-- Authentication Button Mockup -->
+                            <div class="bg-slate-800/50 rounded-lg p-6 border border-slate-700">
+                                <h4 class="text-xl font-semibold text-emerald-400 mb-4">Authentication Button Component</h4>
+                                <div class="bg-slate-900 rounded-lg p-4 md:p-8 flex items-center justify-center mockup-container">
+                                    <div class="bg-white rounded-lg p-4 md:p-6 shadow-xl max-w-md w-full">
+                                        <h5 class="text-slate-900 font-semibold mb-4 text-center">Verify Your Identity</h5>
+                                        <button class="w-full bg-gradient-to-r from-sky-600 to-emerald-500 hover:from-sky-700 hover:to-emerald-600 text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-3 transition-all shadow-lg">
+                                            <div class="bg-white/20 rounded p-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                                </svg>
+                                            </div>
+                                            <span>Verify Identity via Bank</span>
+                                        </button>
+                                        <p class="text-slate-500 text-xs text-center mt-3">Powered by ProvIDe</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bank Selection Mockup -->
+                            <div class="bg-slate-800/50 rounded-lg p-6 border border-slate-700">
+                                <h4 class="text-xl font-semibold text-emerald-400 mb-4">Bank Selection Interface</h4>
+                                <div class="bg-slate-900 rounded-lg p-4 md:p-8 flex items-center justify-center mockup-container">
+                                    <div class="bg-white rounded-lg p-4 md:p-6 shadow-xl max-w-md w-full">
+                                        <h5 class="text-slate-900 font-semibold mb-4">Select Your Bank</h5>
+                                        <div class="space-y-3">
+                                            <button class="w-full border-2 border-slate-200 hover:border-sky-500 hover:bg-sky-50 rounded-lg p-4 flex items-center gap-4 transition-all text-left">
+                                                <div class="w-12 h-12 bg-slate-200 rounded-lg flex items-center justify-center">
+                                                    <span class="text-slate-600 font-bold">B1</span>
+                                                </div>
+                                                <div>
+                                                    <p class="font-semibold text-slate-900">Bank Hapoalim</p>
+                                                    <p class="text-xs text-slate-500">Israel's leading bank</p>
+                                                </div>
+                                            </button>
+                                            <button class="w-full border-2 border-slate-200 hover:border-sky-500 hover:bg-sky-50 rounded-lg p-4 flex items-center gap-4 transition-all text-left">
+                                                <div class="w-12 h-12 bg-slate-200 rounded-lg flex items-center justify-center">
+                                                    <span class="text-slate-600 font-bold">L1</span>
+                                                </div>
+                                                <div>
+                                                    <p class="font-semibold text-slate-900">Leumi Bank</p>
+                                                    <p class="text-xs text-slate-500">Trusted banking partner</p>
+                                                </div>
+                                            </button>
+                                            <button class="w-full border-2 border-slate-200 hover:border-sky-500 hover:bg-sky-50 rounded-lg p-4 flex items-center gap-4 transition-all text-left">
+                                                <div class="w-12 h-12 bg-slate-200 rounded-lg flex items-center justify-center">
+                                                    <span class="text-slate-600 font-bold">M1</span>
+                                                </div>
+                                                <div>
+                                                    <p class="font-semibold text-slate-900">Mizrahi Tefahot</p>
+                                                    <p class="text-xs text-slate-500">Secure banking</p>
+                                                </div>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Redirect/Loading Mockup -->
+                            <div class="bg-slate-800/50 rounded-lg p-6 border border-slate-700">
+                                <h4 class="text-xl font-semibold text-emerald-400 mb-4">Redirect / Loading State</h4>
+                                <div class="bg-slate-900 rounded-lg p-4 md:p-8 flex items-center justify-center mockup-container">
+                                    <div class="bg-white rounded-lg p-6 md:p-8 shadow-xl max-w-md w-full text-center">
+                                        <div class="mb-6">
+                                            <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-sky-200 border-t-sky-600"></div>
+                                        </div>
+                                        <h5 class="text-slate-900 font-semibold mb-2">Redirecting to Bank</h5>
+                                        <p class="text-slate-500 text-sm">Please wait while we securely connect you to your bank...</p>
+                                        <div class="mt-4 flex items-center justify-center gap-2">
+                                            <div class="w-2 h-2 bg-sky-500 rounded-full animate-pulse"></div>
+                                            <div class="w-2 h-2 bg-sky-500 rounded-full animate-pulse" style="animation-delay: 0.2s"></div>
+                                            <div class="w-2 h-2 bg-sky-500 rounded-full animate-pulse" style="animation-delay: 0.4s"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Success Screen Mockup -->
+                            <div class="bg-slate-800/50 rounded-lg p-6 border border-slate-700">
+                                <h4 class="text-xl font-semibold text-emerald-400 mb-4">Success Confirmation Screen</h4>
+                                <div class="bg-slate-900 rounded-lg p-4 md:p-8 flex items-center justify-center mockup-container">
+                                    <div class="bg-white rounded-lg p-6 md:p-8 shadow-xl max-w-md w-full text-center">
+                                        <div class="mb-6">
+                                            <div class="inline-flex items-center justify-center w-20 h-20 bg-emerald-100 rounded-full">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <h5 class="text-slate-900 font-semibold text-xl mb-2">Identity Verified Successfully!</h5>
+                                        <p class="text-slate-500 text-sm mb-6">Your identity has been verified by your bank. You can now proceed.</p>
+                                        <button class="w-full bg-gradient-to-r from-sky-600 to-emerald-500 hover:from-sky-700 hover:to-emerald-600 text-white font-semibold py-3 px-6 rounded-lg transition-all">
+                                            Continue
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Error Handling Mockup -->
+                            <div class="bg-slate-800/50 rounded-lg p-6 border border-slate-700">
+                                <h4 class="text-xl font-semibold text-emerald-400 mb-4">Error Handling Screen</h4>
+                                <div class="bg-slate-900 rounded-lg p-4 md:p-8 flex items-center justify-center mockup-container">
+                                    <div class="bg-white rounded-lg p-6 md:p-8 shadow-xl max-w-md w-full text-center">
+                                        <div class="mb-6">
+                                            <div class="inline-flex items-center justify-center w-20 h-20 bg-red-100 rounded-full">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <h5 class="text-slate-900 font-semibold text-xl mb-2">Authentication Failed</h5>
+                                        <p class="text-slate-500 text-sm mb-6">We couldn't verify your identity. Please try again or contact support if the problem persists.</p>
+                                        <div class="space-y-3">
+                                            <button class="w-full bg-gradient-to-r from-sky-600 to-emerald-500 hover:from-sky-700 hover:to-emerald-600 text-white font-semibold py-3 px-6 rounded-lg transition-all">
+                                                Try Again
+                                            </button>
+                                            <button class="w-full border-2 border-slate-300 hover:border-slate-400 text-slate-700 font-semibold py-3 px-6 rounded-lg transition-all">
+                                                Contact Support
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -749,6 +947,29 @@
 
         window.addEventListener('scroll', highlightActiveSection);
         highlightActiveSection();
+
+        // Initialize Mermaid
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'dark',
+            themeVariables: {
+                primaryColor: '#0284c7',
+                primaryTextColor: '#ffffff',
+                primaryBorderColor: '#38bdf8',
+                lineColor: '#10b981',
+                secondaryColor: '#0f172a',
+                tertiaryColor: '#1e293b',
+                background: '#0f172a',
+                mainBkgColor: '#1e293b',
+                secondBkgColor: '#0f172a',
+                textColor: '#e2e8f0',
+                border1: '#475569',
+                border2: '#64748b',
+                noteBkgColor: '#1e293b',
+                noteTextColor: '#e2e8f0',
+                noteBorderColor: '#475569'
+            }
+        });
     </script>
 </body>
 </html>
