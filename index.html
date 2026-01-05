@@ -280,65 +280,67 @@
                     <!-- Architecture Diagram -->
                     <div class="bg-slate-800/50 rounded-lg p-8 border border-slate-700">
                         <h3 class="text-2xl font-semibold text-white mb-6">System Architecture Diagram</h3>
-                        <div class="mermaid bg-white/5 rounded-lg p-4 overflow-x-auto mockup-container" style="min-height: 400px;">
-                            graph TB
-                                subgraph Client["Client Side"]
-                                    UI[User Interface<br/>Angular/React]
-                                    AuthBtn[Authentication Button]
-                                    Redirect[OAuth Redirect Handler]
+                        <div class="mermaid bg-white/5 rounded-lg p-8 overflow-x-auto" style="min-height: 600px; font-size: 16px;">
+                            graph LR
+                                User[👤 User]
+                                
+                                subgraph Client["🖥️ Client Side<br/>(Angular/React)"]
+                                    UI[User Interface]
+                                    AuthBtn[Auth Button]
                                 end
                                 
-                                subgraph ProvIDe["ProvIDe Platform"]
+                                subgraph ProvIDe["🔐 ProvIDe Platform"]
                                     API[API Gateway]
-                                    AuthMod[Authentication Module]
-                                    IdentitySvc[Identity Assertion Service]
-                                    TokenMgr[Token Management]
-                                    Audit[Audit & Compliance]
-                                    DB[(Database<br/>Identity & Tokens)]
+                                    AuthMod[Auth Module]
+                                    IdentitySvc[Identity Service]
+                                    DB[(Database)]
                                 end
                                 
-                                subgraph Banking["Banking Infrastructure"]
-                                    OpenBank[Open Banking<br/>Intermediary]
-                                    BankAuth[Bank Authentication<br/>OAuth 2.0]
-                                    BankDB[(Bank KYC Database)]
+                                subgraph Bank["🏦 Bank"]
+                                    BankAuth[Bank Auth<br/>OAuth 2.0]
+                                    BankDB[(KYC Database)]
                                 end
                                 
-                                subgraph Services["Digital Services"]
+                                subgraph Services["🌐 Digital Services"]
                                     LoanSvc[Loan Services]
-                                    Ecommerce[E-commerce Platforms]
-                                    Crypto[Crypto Services]
+                                    Ecommerce[E-commerce]
+                                    Crypto[Crypto]
                                 end
                                 
+                                User -->|1. Clicks Auth Button| UI
                                 UI --> AuthBtn
-                                AuthBtn --> Redirect
-                                Redirect -->|OAuth Request| API
+                                AuthBtn -->|2. OAuth Request| API
                                 API --> AuthMod
-                                AuthMod -->|Auth Request| OpenBank
-                                OpenBank --> BankAuth
-                                BankAuth -->|Verify Identity| BankDB
-                                BankAuth -->|Identity Confirmation| OpenBank
-                                OpenBank -->|Identity Assertion| IdentitySvc
-                                IdentitySvc --> TokenMgr
-                                TokenMgr --> DB
-                                IdentitySvc --> Audit
-                                Audit --> DB
-                                IdentitySvc -->|Verified Identity| API
-                                API -->|Identity Assertion| Services
+                                AuthMod -->|3. Verify Identity| BankAuth
+                                BankAuth -->|Check| BankDB
+                                BankAuth -->|4. Identity Confirmed| IdentitySvc
+                                IdentitySvc -->|Store| DB
+                                IdentitySvc -->|5. Return Verified Identity| API
+                                API -->|6. Identity Assertion| Services
                                 
                                 Services --> LoanSvc
                                 Services --> Ecommerce
                                 Services --> Crypto
                                 
-                                style Client fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#fff
-                                style ProvIDe fill:#1e293b,stroke:#10b981,stroke-width:2px,color:#fff
-                                style Banking fill:#1e293b,stroke:#f59e0b,stroke-width:2px,color:#fff
-                                style Services fill:#1e293b,stroke:#8b5cf6,stroke-width:2px,color:#fff
-                                style DB fill:#0f172a,stroke:#10b981,stroke-width:2px,color:#fff
-                                style BankDB fill:#0f172a,stroke:#f59e0b,stroke-width:2px,color:#fff
+                                style Client fill:#1e293b,stroke:#38bdf8,stroke-width:3px,color:#fff
+                                style ProvIDe fill:#1e293b,stroke:#10b981,stroke-width:3px,color:#fff
+                                style Bank fill:#1e293b,stroke:#f59e0b,stroke-width:3px,color:#fff
+                                style Services fill:#1e293b,stroke:#8b5cf6,stroke-width:3px,color:#fff
+                                style DB fill:#0f172a,stroke:#10b981,stroke-width:3px,color:#fff
+                                style BankDB fill:#0f172a,stroke:#f59e0b,stroke-width:3px,color:#fff
+                                style User fill:#1e293b,stroke:#e2e8f0,stroke-width:3px,color:#fff
                         </div>
-                        <p class="text-slate-400 text-sm mt-4 italic">
-                            The diagram illustrates the flow of identity verification from user interaction through bank authentication to digital service integration.
-                        </p>
+                        <div class="mt-6 bg-slate-900/50 rounded-lg p-4">
+                            <h4 class="text-lg font-semibold text-white mb-3">Flow Steps:</h4>
+                            <ol class="space-y-2 text-slate-300 text-sm list-decimal list-inside">
+                                <li>User clicks authentication button on digital service</li>
+                                <li>OAuth request sent to ProvIDe API Gateway</li>
+                                <li>ProvIDe redirects to Bank for identity verification</li>
+                                <li>Bank verifies identity and confirms to ProvIDe</li>
+                                <li>ProvIDe generates identity assertion and returns to service</li>
+                                <li>Digital service receives verified identity without documents</li>
+                            </ol>
+                        </div>
                     </div>
 
                     <div class="bg-slate-800/50 rounded-lg p-8 border border-slate-700">
@@ -952,6 +954,14 @@
         mermaid.initialize({ 
             startOnLoad: true,
             theme: 'dark',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis',
+                padding: 20,
+                nodeSpacing: 50,
+                rankSpacing: 80
+            },
             themeVariables: {
                 primaryColor: '#0284c7',
                 primaryTextColor: '#ffffff',
@@ -967,7 +977,9 @@
                 border2: '#64748b',
                 noteBkgColor: '#1e293b',
                 noteTextColor: '#e2e8f0',
-                noteBorderColor: '#475569'
+                noteBorderColor: '#475569',
+                fontSize: '18px',
+                fontFamily: 'Inter, sans-serif'
             }
         });
     </script>
