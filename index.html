@@ -279,56 +279,163 @@
 
                     <!-- Architecture Diagram -->
                     <div class="bg-slate-800/50 rounded-lg p-8 border border-slate-700">
-                        <h3 class="text-2xl font-semibold text-white mb-6">System Architecture Diagram</h3>
-                        <div class="mermaid bg-white/5 rounded-lg p-8 overflow-x-auto" style="min-height: 600px; font-size: 16px;">
-                            graph LR
-                                User[👤 User]
-                                
-                                subgraph Client["🖥️ Client Side<br/>(Angular/React)"]
-                                    UI[User Interface]
-                                    AuthBtn[Auth Button]
-                                end
-                                
-                                subgraph ProvIDe["🔐 ProvIDe Platform"]
-                                    API[API Gateway]
-                                    AuthMod[Auth Module]
-                                    IdentitySvc[Identity Service]
-                                    DB[(Database)]
-                                end
-                                
-                                subgraph Bank["🏦 Bank"]
-                                    BankAuth[Bank Auth<br/>OAuth 2.0]
-                                    BankDB[(KYC Database)]
-                                end
-                                
-                                subgraph Services["🌐 Digital Services"]
-                                    LoanSvc[Loan Services]
-                                    Ecommerce[E-commerce]
-                                    Crypto[Crypto]
-                                end
-                                
-                                User -->|1. Clicks Auth Button| UI
-                                UI --> AuthBtn
-                                AuthBtn -->|2. OAuth Request| API
-                                API --> AuthMod
-                                AuthMod -->|3. Verify Identity| BankAuth
-                                BankAuth -->|Check| BankDB
-                                BankAuth -->|4. Identity Confirmed| IdentitySvc
-                                IdentitySvc -->|Store| DB
-                                IdentitySvc -->|5. Return Verified Identity| API
-                                API -->|6. Identity Assertion| Services
-                                
-                                Services --> LoanSvc
-                                Services --> Ecommerce
-                                Services --> Crypto
-                                
-                                style Client fill:#1e293b,stroke:#38bdf8,stroke-width:3px,color:#fff
-                                style ProvIDe fill:#1e293b,stroke:#10b981,stroke-width:3px,color:#fff
-                                style Bank fill:#1e293b,stroke:#f59e0b,stroke-width:3px,color:#fff
-                                style Services fill:#1e293b,stroke:#8b5cf6,stroke-width:3px,color:#fff
-                                style DB fill:#0f172a,stroke:#10b981,stroke-width:3px,color:#fff
-                                style BankDB fill:#0f172a,stroke:#f59e0b,stroke-width:3px,color:#fff
-                                style User fill:#1e293b,stroke:#e2e8f0,stroke-width:3px,color:#fff
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-2xl font-semibold text-white">System Architecture Diagram</h3>
+                            <div class="flex items-center gap-2">
+                                <button id="zoom-in-btn" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded-lg transition-colors text-sm font-medium" title="Zoom In">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+                                    </svg>
+                                </button>
+                                <button id="zoom-out-btn" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded-lg transition-colors text-sm font-medium" title="Zoom Out">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
+                                    </svg>
+                                </button>
+                                <button id="zoom-reset-btn" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded-lg transition-colors text-sm font-medium" title="Reset Zoom">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                    </svg>
+                                </button>
+                                <button id="fullscreen-btn" class="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium flex items-center gap-2" title="Fullscreen">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                                    </svg>
+                                    <span>Fullscreen</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="diagram-container" class="relative bg-slate-900 rounded-lg border border-slate-700 overflow-hidden" style="min-height: 600px; max-height: 800px;">
+                            <div id="diagram-wrapper" class="overflow-auto h-full" style="cursor: grab;">
+                                <div id="mermaid-diagram" class="mermaid bg-white/5 p-8" style="min-width: 100%; min-height: 600px; font-size: 16px; transform-origin: top left; transition: transform 0.2s;">
+                                    graph LR
+                                        User[👤 User]
+                                        
+                                        subgraph Client["🖥️ Client Side<br/>(Angular/React)"]
+                                            UI[User Interface]
+                                            AuthBtn[Auth Button]
+                                        end
+                                        
+                                        subgraph ProvIDe["🔐 ProvIDe Platform"]
+                                            API[API Gateway]
+                                            AuthMod[Auth Module]
+                                            IdentitySvc[Identity Service]
+                                            DB[(Database)]
+                                        end
+                                        
+                                        subgraph Bank["🏦 Bank"]
+                                            BankAuth[Bank Auth<br/>OAuth 2.0]
+                                            BankDB[(KYC Database)]
+                                        end
+                                        
+                                        subgraph Services["🌐 Digital Services"]
+                                            LoanSvc[Loan Services]
+                                            Ecommerce[E-commerce]
+                                            Crypto[Crypto]
+                                        end
+                                        
+                                        User -->|1. Clicks Auth Button| UI
+                                        UI --> AuthBtn
+                                        AuthBtn -->|2. OAuth Request| API
+                                        API --> AuthMod
+                                        AuthMod -->|3. Verify Identity| BankAuth
+                                        BankAuth -->|Check| BankDB
+                                        BankAuth -->|4. Identity Confirmed| IdentitySvc
+                                        IdentitySvc -->|Store| DB
+                                        IdentitySvc -->|5. Return Verified Identity| API
+                                        API -->|6. Identity Assertion| Services
+                                        
+                                        Services --> LoanSvc
+                                        Services --> Ecommerce
+                                        Services --> Crypto
+                                        
+                                        style Client fill:#1e293b,stroke:#38bdf8,stroke-width:3px,color:#fff
+                                        style ProvIDe fill:#1e293b,stroke:#10b981,stroke-width:3px,color:#fff
+                                        style Bank fill:#1e293b,stroke:#f59e0b,stroke-width:3px,color:#fff
+                                        style Services fill:#1e293b,stroke:#8b5cf6,stroke-width:3px,color:#fff
+                                        style DB fill:#0f172a,stroke:#10b981,stroke-width:3px,color:#fff
+                                        style BankDB fill:#0f172a,stroke:#f59e0b,stroke-width:3px,color:#fff
+                                        style User fill:#1e293b,stroke:#e2e8f0,stroke-width:3px,color:#fff
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Fullscreen Modal -->
+                        <div id="fullscreen-modal" class="hidden fixed inset-0 z-50 bg-slate-900">
+                            <div class="absolute top-4 right-4 flex items-center gap-2 z-10">
+                                <button id="fs-zoom-in-btn" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded-lg transition-colors" title="Zoom In">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+                                    </svg>
+                                </button>
+                                <button id="fs-zoom-out-btn" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded-lg transition-colors" title="Zoom Out">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
+                                    </svg>
+                                </button>
+                                <button id="fs-zoom-reset-btn" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded-lg transition-colors" title="Reset Zoom">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                    </svg>
+                                </button>
+                                <button id="exit-fullscreen-btn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                    <span>Exit Fullscreen</span>
+                                </button>
+                            </div>
+                            <div id="fullscreen-wrapper" class="w-full h-full overflow-auto" style="cursor: grab;">
+                                <div id="fullscreen-diagram" class="mermaid bg-white/5 p-8 m-auto" style="min-width: 100%; min-height: 100vh; font-size: 20px; transform-origin: center; transition: transform 0.2s;">
+                                    graph LR
+                                        User[👤 User]
+                                        
+                                        subgraph Client["🖥️ Client Side<br/>(Angular/React)"]
+                                            UI[User Interface]
+                                            AuthBtn[Auth Button]
+                                        end
+                                        
+                                        subgraph ProvIDe["🔐 ProvIDe Platform"]
+                                            API[API Gateway]
+                                            AuthMod[Auth Module]
+                                            IdentitySvc[Identity Service]
+                                            DB[(Database)]
+                                        end
+                                        
+                                        subgraph Bank["🏦 Bank"]
+                                            BankAuth[Bank Auth<br/>OAuth 2.0]
+                                            BankDB[(KYC Database)]
+                                        end
+                                        
+                                        subgraph Services["🌐 Digital Services"]
+                                            LoanSvc[Loan Services]
+                                            Ecommerce[E-commerce]
+                                            Crypto[Crypto]
+                                        end
+                                        
+                                        User -->|1. Clicks Auth Button| UI
+                                        UI --> AuthBtn
+                                        AuthBtn -->|2. OAuth Request| API
+                                        API --> AuthMod
+                                        AuthMod -->|3. Verify Identity| BankAuth
+                                        BankAuth -->|Check| BankDB
+                                        BankAuth -->|4. Identity Confirmed| IdentitySvc
+                                        IdentitySvc -->|Store| DB
+                                        IdentitySvc -->|5. Return Verified Identity| API
+                                        API -->|6. Identity Assertion| Services
+                                        
+                                        Services --> LoanSvc
+                                        Services --> Ecommerce
+                                        Services --> Crypto
+                                        
+                                        style Client fill:#1e293b,stroke:#38bdf8,stroke-width:3px,color:#fff
+                                        style ProvIDe fill:#1e293b,stroke:#10b981,stroke-width:3px,color:#fff
+                                        style Bank fill:#1e293b,stroke:#f59e0b,stroke-width:3px,color:#fff
+                                        style Services fill:#1e293b,stroke:#8b5cf6,stroke-width:3px,color:#fff
+                                        style DB fill:#0f172a,stroke:#10b981,stroke-width:3px,color:#fff
+                                        style BankDB fill:#0f172a,stroke:#f59e0b,stroke-width:3px,color:#fff
+                                        style User fill:#1e293b,stroke:#e2e8f0,stroke-width:3px,color:#fff
+                                </div>
+                            </div>
                         </div>
                         <div class="mt-6 bg-slate-900/50 rounded-lg p-4">
                             <h4 class="text-lg font-semibold text-white mb-3">Flow Steps:</h4>
@@ -980,6 +1087,192 @@
                 noteBorderColor: '#475569',
                 fontSize: '18px',
                 fontFamily: 'Inter, sans-serif'
+            }
+        });
+
+        // Diagram Zoom and Pan Functionality
+        let zoomLevel = 1;
+        const minZoom = 0.5;
+        const maxZoom = 3;
+        const zoomStep = 0.2;
+        let isPanning = false;
+        let startX, startY, scrollLeft, scrollTop;
+
+        const diagramElement = document.getElementById('mermaid-diagram');
+        const diagramWrapper = document.getElementById('diagram-wrapper');
+        const fullscreenDiagram = document.getElementById('fullscreen-diagram');
+        const fullscreenWrapper = document.getElementById('fullscreen-wrapper');
+        const fullscreenModal = document.getElementById('fullscreen-modal');
+
+        let fsZoomLevel = 1;
+
+        // Zoom functions for normal view
+        function applyZoom(element, level) {
+            element.style.transform = `scale(${level})`;
+            zoomLevel = level;
+        }
+
+        function applyFSZoom(element, level) {
+            element.style.transform = `scale(${level})`;
+            fsZoomLevel = level;
+        }
+
+        // Zoom In
+        document.getElementById('zoom-in-btn').addEventListener('click', () => {
+            if (zoomLevel < maxZoom) {
+                applyZoom(diagramElement, Math.min(zoomLevel + zoomStep, maxZoom));
+            }
+        });
+
+        // Zoom Out
+        document.getElementById('zoom-out-btn').addEventListener('click', () => {
+            if (zoomLevel > minZoom) {
+                applyZoom(diagramElement, Math.max(zoomLevel - zoomStep, minZoom));
+            }
+        });
+
+        // Reset Zoom
+        document.getElementById('zoom-reset-btn').addEventListener('click', () => {
+            applyZoom(diagramElement, 1);
+            diagramWrapper.scrollLeft = 0;
+            diagramWrapper.scrollTop = 0;
+        });
+
+        // Fullscreen Zoom In
+        document.getElementById('fs-zoom-in-btn').addEventListener('click', () => {
+            if (fsZoomLevel < maxZoom) {
+                applyFSZoom(fullscreenDiagram, Math.min(fsZoomLevel + zoomStep, maxZoom));
+            }
+        });
+
+        // Fullscreen Zoom Out
+        document.getElementById('fs-zoom-out-btn').addEventListener('click', () => {
+            if (fsZoomLevel > minZoom) {
+                applyFSZoom(fullscreenDiagram, Math.max(fsZoomLevel - zoomStep, minZoom));
+            }
+        });
+
+        // Fullscreen Reset Zoom
+        document.getElementById('fs-zoom-reset-btn').addEventListener('click', () => {
+            applyFSZoom(fullscreenDiagram, 1);
+            fullscreenWrapper.scrollLeft = 0;
+            fullscreenWrapper.scrollTop = 0;
+        });
+
+        // Mouse wheel zoom
+        diagramWrapper.addEventListener('wheel', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? -zoomStep : zoomStep;
+                const newZoom = Math.max(minZoom, Math.min(maxZoom, zoomLevel + delta));
+                applyZoom(diagramElement, newZoom);
+            }
+        });
+
+        fullscreenWrapper.addEventListener('wheel', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? -zoomStep : zoomStep;
+                const newZoom = Math.max(minZoom, Math.min(maxZoom, fsZoomLevel + delta));
+                applyFSZoom(fullscreenDiagram, newZoom);
+            }
+        });
+
+        // Pan functionality (drag to pan)
+        function startPan(e, wrapper) {
+            isPanning = true;
+            wrapper.style.cursor = 'grabbing';
+            startX = e.pageX - wrapper.offsetLeft;
+            startY = e.pageY - wrapper.offsetTop;
+            scrollLeft = wrapper.scrollLeft;
+            scrollTop = wrapper.scrollTop;
+        }
+
+        function doPan(e, wrapper) {
+            if (!isPanning) return;
+            e.preventDefault();
+            const x = e.pageX - wrapper.offsetLeft;
+            const y = e.pageY - wrapper.offsetTop;
+            const walkX = (x - startX) * 2;
+            const walkY = (y - startY) * 2;
+            wrapper.scrollLeft = scrollLeft - walkX;
+            wrapper.scrollTop = scrollTop - walkY;
+        }
+
+        function stopPan(wrapper) {
+            isPanning = false;
+            wrapper.style.cursor = 'grab';
+        }
+
+        // Normal view pan
+        diagramWrapper.addEventListener('mousedown', (e) => startPan(e, diagramWrapper));
+        diagramWrapper.addEventListener('mousemove', (e) => doPan(e, diagramWrapper));
+        diagramWrapper.addEventListener('mouseup', () => stopPan(diagramWrapper));
+        diagramWrapper.addEventListener('mouseleave', () => stopPan(diagramWrapper));
+
+        // Fullscreen view pan
+        fullscreenWrapper.addEventListener('mousedown', (e) => startPan(e, fullscreenWrapper));
+        fullscreenWrapper.addEventListener('mousemove', (e) => doPan(e, fullscreenWrapper));
+        fullscreenWrapper.addEventListener('mouseup', () => stopPan(fullscreenWrapper));
+        fullscreenWrapper.addEventListener('mouseleave', () => stopPan(fullscreenWrapper));
+
+        // Touch support for mobile
+        let touchStartX, touchStartY, touchScrollLeft, touchScrollTop;
+
+        function startTouchPan(e, wrapper) {
+            const touch = e.touches[0];
+            touchStartX = touch.pageX - wrapper.offsetLeft;
+            touchStartY = touch.pageY - wrapper.offsetTop;
+            touchScrollLeft = wrapper.scrollLeft;
+            touchScrollTop = wrapper.scrollTop;
+        }
+
+        function doTouchPan(e, wrapper) {
+            if (!e.touches[0]) return;
+            const touch = e.touches[0];
+            const x = touch.pageX - wrapper.offsetLeft;
+            const y = touch.pageY - wrapper.offsetTop;
+            const walkX = (x - touchStartX) * 2;
+            const walkY = (y - touchStartY) * 2;
+            wrapper.scrollLeft = touchScrollLeft - walkX;
+            wrapper.scrollTop = touchScrollTop - walkY;
+        }
+
+        diagramWrapper.addEventListener('touchstart', (e) => startTouchPan(e, diagramWrapper));
+        diagramWrapper.addEventListener('touchmove', (e) => doTouchPan(e, diagramWrapper));
+        fullscreenWrapper.addEventListener('touchstart', (e) => startTouchPan(e, fullscreenWrapper));
+        fullscreenWrapper.addEventListener('touchmove', (e) => doTouchPan(e, fullscreenWrapper));
+
+        // Fullscreen functionality
+        document.getElementById('fullscreen-btn').addEventListener('click', () => {
+            fullscreenModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            // Ensure Mermaid renders in fullscreen
+            setTimeout(() => {
+                const fsDiagram = document.getElementById('fullscreen-diagram');
+                if (fsDiagram && !fsDiagram.classList.contains('mermaid-rendered')) {
+                    mermaid.init(undefined, fsDiagram);
+                    fsDiagram.classList.add('mermaid-rendered');
+                }
+            }, 200);
+        });
+
+        document.getElementById('exit-fullscreen-btn').addEventListener('click', () => {
+            fullscreenModal.classList.add('hidden');
+            document.body.style.overflow = '';
+            applyFSZoom(fullscreenDiagram, 1);
+            fullscreenWrapper.scrollLeft = 0;
+            fullscreenWrapper.scrollTop = 0;
+        });
+
+        // Exit fullscreen on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !fullscreenModal.classList.contains('hidden')) {
+                fullscreenModal.classList.add('hidden');
+                document.body.style.overflow = '';
+                applyFSZoom(fullscreenDiagram, 1);
+                fullscreenWrapper.scrollLeft = 0;
+                fullscreenWrapper.scrollTop = 0;
             }
         });
     </script>
